@@ -6,10 +6,8 @@ import {
   Min,
 } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
-import { OmitType } from '@nestjs/mapped-types';
-import { Product } from '../entities/product.entity';
 
-export class CreateProductDto extends OmitType(Product, ['id'] as const) {
+export class CreateProductDto {
   @IsDefined()
   @IsString()
   name: string;
