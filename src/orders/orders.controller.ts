@@ -9,11 +9,11 @@ import {
   ParseUUIDPipe,
   Query,
 } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { firstValueFrom } from 'rxjs';
+import { ClientProxy } from '@nestjs/microservices';
 import { ORDERS_MS } from 'src/config';
 import { CreateOrderDto, PaginationOrderDto, StatusOrderDto } from './dto';
 import { OrderPatterns } from './enums';
+import { observableErrorHandler } from 'src/common';
 
 @Controller('orders')
 export class OrdersController {
@@ -21,7 +21,9 @@ export class OrdersController {
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
-    return this.ordersClient.send(OrderPatterns.createOrder, createOrderDto);
+    return observableErrorHandler(
+      this.ordersClient.send(OrderPatterns.createOrder, createOrderDto),
+    );
   }
 
   @Get()
@@ -31,16 +33,11 @@ export class OrdersController {
 
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    try {
-      const order = await firstValueFrom(
-        this.ordersClient.send(OrderPatterns.findOneOrder, {
-          id,
-        }),
-      );
-      return order;
-    } catch (error) {
-      throw new RpcException(error);
-    }
+    return observableErrorHandler(
+      this.ordersClient.send(OrderPatterns.findOneOrder, {
+        id,
+      }),
+    );
   }
 
   @Patch(':id')
@@ -48,16 +45,11 @@ export class OrdersController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() statusDto: StatusOrderDto,
   ) {
-    try {
-      const order = await firstValueFrom(
-        this.ordersClient.send(OrderPatterns.changeStatusOrder, {
-          id,
-          ...statusDto,
-        }),
-      );
-      return order;
-    } catch (error) {
-      throw new RpcException(error);
-    }
+    return observableErrorHandler(
+      this.ordersClient.send(OrderPatterns.changeStatusOrder, {
+        id,
+        ...statusDto,
+      }),
+    );
   }
 }

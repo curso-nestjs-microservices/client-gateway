@@ -9,10 +9,9 @@ import {
   Inject,
   Query,
 } from '@nestjs/common';
-import { ClientProxy, RpcException } from '@nestjs/microservices';
-import { catchError } from 'rxjs';
+import { ClientProxy } from '@nestjs/microservices';
 import { PRODUCTS_MS } from 'src/config';
-import { PaginationDto } from 'src/common';
+import { observableErrorHandler, PaginationDto } from 'src/common';
 import { ProductPatterns } from './enums';
 import { CreateProductDto, UpdateProductDto } from './dto';
 
@@ -40,34 +39,25 @@ export class ProductsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.productsClient
-      .send({ cmd: ProductPatterns.findOneProduct }, { id })
-      .pipe(
-        catchError((err) => {
-          throw new RpcException(err);
-        }),
-      );
+    return observableErrorHandler(
+      this.productsClient.send({ cmd: ProductPatterns.findOneProduct }, { id }),
+    );
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productsClient
-      .send({ cmd: ProductPatterns.updateProduct }, { id, ...updateProductDto })
-      .pipe(
-        catchError((err) => {
-          throw new RpcException(err);
-        }),
-      );
+    return observableErrorHandler(
+      this.productsClient.send(
+        { cmd: ProductPatterns.updateProduct },
+        { id, ...updateProductDto },
+      ),
+    );
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.productsClient
-      .send({ cmd: ProductPatterns.deleteProduct }, { id })
-      .pipe(
-        catchError((err) => {
-          throw new RpcException(err);
-        }),
-      );
+    return observableErrorHandler(
+      this.productsClient.send({ cmd: ProductPatterns.deleteProduct }, { id }),
+    );
   }
 }
