@@ -10,20 +10,18 @@ import {
   Query,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { PRODUCTS_MS } from 'src/config';
+import { NATS_SERVICE } from 'src/config';
 import { observableErrorHandler, PaginationDto } from 'src/common';
 import { ProductPatterns } from './enums';
 import { CreateProductDto, UpdateProductDto } from './dto';
 
 @Controller('products')
 export class ProductsController {
-  constructor(
-    @Inject(PRODUCTS_MS) private readonly productsClient: ClientProxy,
-  ) {}
+  constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {}
 
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
-    return this.productsClient.send(
+    return this.client.send(
       { cmd: ProductPatterns.createProduct },
       createProductDto,
     );
@@ -31,7 +29,7 @@ export class ProductsController {
 
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
-    return this.productsClient.send(
+    return this.client.send(
       { cmd: ProductPatterns.findAllProducts },
       paginationDto,
     );
@@ -40,14 +38,14 @@ export class ProductsController {
   @Get(':id')
   findOne(@Param('id') id: string) {
     return observableErrorHandler(
-      this.productsClient.send({ cmd: ProductPatterns.findOneProduct }, { id }),
+      this.client.send({ cmd: ProductPatterns.findOneProduct }, { id }),
     );
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return observableErrorHandler(
-      this.productsClient.send(
+      this.client.send(
         { cmd: ProductPatterns.updateProduct },
         { id, ...updateProductDto },
       ),
@@ -57,7 +55,7 @@ export class ProductsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return observableErrorHandler(
-      this.productsClient.send({ cmd: ProductPatterns.deleteProduct }, { id }),
+      this.client.send({ cmd: ProductPatterns.deleteProduct }, { id }),
     );
   }
 }

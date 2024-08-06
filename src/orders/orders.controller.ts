@@ -10,31 +10,31 @@ import {
   Query,
 } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { ORDERS_MS } from 'src/config';
+import { NATS_SERVICE } from 'src/config';
 import { CreateOrderDto, PaginationOrderDto, StatusOrderDto } from './dto';
 import { OrderPatterns } from './enums';
 import { observableErrorHandler } from 'src/common';
 
 @Controller('orders')
 export class OrdersController {
-  constructor(@Inject(ORDERS_MS) private readonly ordersClient: ClientProxy) {}
+  constructor(@Inject(NATS_SERVICE) private readonly client: ClientProxy) {}
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
     return observableErrorHandler(
-      this.ordersClient.send(OrderPatterns.createOrder, createOrderDto),
+      this.client.send(OrderPatterns.createOrder, createOrderDto),
     );
   }
 
   @Get()
   findAll(@Query() paginationDto: PaginationOrderDto) {
-    return this.ordersClient.send(OrderPatterns.findAllOrders, paginationDto);
+    return this.client.send(OrderPatterns.findAllOrders, paginationDto);
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return observableErrorHandler(
-      this.ordersClient.send(OrderPatterns.findOneOrder, {
+      this.client.send(OrderPatterns.findOneOrder, {
         id,
       }),
     );
@@ -46,7 +46,7 @@ export class OrdersController {
     @Body() statusDto: StatusOrderDto,
   ) {
     return observableErrorHandler(
-      this.ordersClient.send(OrderPatterns.changeStatusOrder, {
+      this.client.send(OrderPatterns.changeStatusOrder, {
         id,
         ...statusDto,
       }),
