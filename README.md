@@ -9,7 +9,7 @@ El gateway es el punto de comunicación entre nuestros clientes y nuestros servi
 3. Crear un archivo `.env` basado en el `env.template`
 4. Levantar el servidor de NATS
 ```
-docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats
+docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats:2.10-alpine3.20
 ```
 5. Tener levantados los microservicios  que se van a consumir
 6. Levantar proyecto con `npm run start:dev`
@@ -18,5 +18,5 @@ docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats
 
 ## Nats
 ```
-docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats
+docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats:2.10-alpine3.20ats
 ```
