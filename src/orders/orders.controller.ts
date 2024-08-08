@@ -28,7 +28,9 @@ export class OrdersController {
 
   @Get()
   findAll(@Query() paginationDto: PaginationOrderDto) {
-    return this.client.send(OrderPatterns.findAllOrders, paginationDto);
+    return observableErrorHandler(
+      this.client.send(OrderPatterns.findAllOrders, paginationDto),
+    );
   }
 
   @Get(':id')
