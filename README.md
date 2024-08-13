@@ -18,5 +18,10 @@ docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats:2.10-alpine3.20
 
 ## Nats
 ```
-docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats:2.10-alpine3.20ats
+docker run -d --name nats-server -p 4222:4222 -p 8222:8222 nats:2.10-alpine3.20
+```
+
+## Generar imagen de Docker productiva
+```
+docker build -f dockerfile.prod -t client-gateway .
 ```
